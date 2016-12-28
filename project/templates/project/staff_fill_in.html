@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+    <style type="text/css">
+
+        *, *:before, *:after {
+          -moz-box-sizing: border-box;
+          -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: 'Nunito', sans-serif;
+          color: #384047;
+        }
+
+        form {
+          max-width: 300px;
+          margin: 10px auto;
+          padding: 10px 20px;
+          background: #f4f7f8;
+          //border-radius: 8px;
+        }
+
+        h1 {
+          margin: 0 0 30px 0;
+          text-align: center;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="date"],
+        input[type="datetime"],
+		input[type="datetime-local"],
+        input[type="email"],
+        input[type="number"],
+        input[type="search"],
+        input[type="tel"],
+        input[type="time"],
+        input[type="url"],
+        textarea,
+        select {
+          background: rgba(255,255,255,0.1);
+          border: none;
+          font-size: 16px;
+          height: auto;
+          margin: 0;
+          outline: 0;
+          padding: 15px;
+          width: 100%;
+          background-color: #e8eeef;
+          color: #8a97a0;
+          box-shadow: 0 1px 0 rgba(0,0,0,0.03) inset;
+          margin-bottom: 30px;
+        }
+        input[type="radio"],
+        input[type="checkbox"] {
+          margin: 4px 4px 4px 4px;
+        }
+
+        input[type="button"],
+        input[type="submit"]{
+            padding: 19px 39px 18px 39px;
+            color: #FFF;
+            background-color: #4bc970;
+            font-size: 18px;
+            text-align: center;
+            font-style: normal;
+            //border-radius: 5px;
+            width: 100%;
+            border: 1px solid #3ac162;
+            border-width: 1px 1px 3px;
+            box-shadow: 0 -1px 0 rgba(255,255,255,0.1) inset;
+            margin-bottom: 10px;
+        }
+        select {
+            padding: 6px;
+            height: 32px;
+            border-radius: 2px;
+        }
+        button {
+          padding: 19px 39px 18px 39px;
+          color: #FFF;
+          background-color: #4bc970;
+          font-size: 18px;
+          text-align: center;
+          font-style: normal;
+          border-radius: 5px;
+          width: 100%;
+          border: 1px solid #3ac162;
+          border-width: 1px 1px 3px;
+          box-shadow: 0 -1px 0 rgba(255,255,255,0.1) inset;
+          margin-bottom: 10px;
+        }
+        fieldset {
+          margin-bottom: 30px;
+          border: none;
+        }
+
+        legend {
+          font-size: 1.4em;
+          margin-bottom: 10px;
+        }
+
+        label {
+          display: block;
+          margin-bottom: 8px;
+        }
+
+        label.light {
+          font-weight: 300;
+          display: inline;
+        }
+
+        .number {
+          background-color: #5fcf80;
+          color: #fff;
+          height: 30px;
+          width: 30px;
+          display: inline-block;
+          font-size: 0.8em;
+          margin-right: 4px;
+          line-height: 30px;
+          text-align: center;
+          text-shadow: 0 1px 0 rgba(255,255,255,0.2);
+          border-radius: 100%;
+        }
+		.container ul{
+		  list-style: none;
+		  height: 100%;
+		  width: 100%;
+		  margin: 0;
+		  padding: 0;
+		}
+				
+		ul li{
+		  height: 100%;
+		  color: #AAAAAA;
+		  display: block;
+		  position: relative;
+		  float: left;
+		  width: 100%;
+		  height: 20px
+		}
+
+		ul li input[type=radio]{
+		  position: absolute;
+		  visibility: hidden;
+		}
+
+		ul li label{
+		  display: block;
+		  position: relative;
+		  padding: 0px 0px 4px 20px;
+		  height: 25px;
+		  z-index: 9;
+		  cursor: pointer;
+		  -webkit-transition: all 0.25s linear;
+		}
+
+		ul li:hover label{
+			color: #444444;
+		}
+
+		ul li:hover .check {
+		  border: 2px solid #444444;
+		}
+
+		ul li .check{
+		  display: block;
+		  position: absolute;
+		  border: 2px solid #AAAAAA;
+		  border-radius: 100%;
+		  height: 16px;
+		  width: 16px;
+		  top: 0px;
+		  left: 0px;
+			z-index: 5;
+			transition: border .25s linear;
+			-webkit-transition: border .25s linear;
+		}
+
+		ul li .check::before {
+		  display: block;
+		  position: absolute;
+			content: ' ';
+		  border-radius: 100%;
+		  height: 8px;
+		  width: 8px;
+		  top: 2px;
+			left: 2px;
+			transition: background 0.25s linear;
+			-webkit-transition: background 0.25s linear;
+		}
+
+		input[type=radio]:checked ~ .check {
+		  border: 2px solid #666666;
+		}
+
+		input[type=radio]:checked ~ .check::before{
+		  background: #666666;
+		}
+
+		input[type=radio]:checked ~ label{
+		  color: #666666;
+		}
+        @media screen and (min-width: 480px) {
+
+          form {
+            max-width: 480px;
+        }
+    </style>
+	
+</head>
+<body>
+
+		
+		<form action="submit" method="post" enctype="multipart/form-data">
+			<h2>填寫測量資料</h2>
+            {% csrf_token %}
+	    <input type="hidden" name="register" value="1">
+            測量日期和時間:<input type="datetime-local" name="datetime">
+			<h3>受測者資料</h3>
+			E-Mail:
+            <select name="email" onchange="auto_fill_in(this.value)">
+                <option disabled selected value></option>
+				{% for user in userlist %}
+				<option value="{{ user }}" onclick="auto_fill_in({{ user }})" >{{ user }}</option>
+			    {% endfor %}
+            </select>
+            <div id="test"></div>
+			系級:
+			<select name="grade" id="grade" value="">
+                <option disabled selected value></option>
+				<option value="undergraduate">大學</option>
+				<option value="graduate">研究所</option>
+				<option value="teacher">老師</option>
+				<option value="staff">員工</option>
+			</select>
+			年齡:<input type="number" name="age" id="age" min="1" max="150" >
+			性別:			
+			<div class="container">	
+				<ul>
+				  <li>
+					<input type="radio"  id="male" name="gender" value="male" >
+					<label for="male">男</label>
+					<div class="check"><div class="inside"></div></div>
+				  </li>
+				  
+				  <li>
+					<input type="radio" id="female" name="gender" value="female" >
+					<label for="female">女</label>
+					<div class="check"><div class="inside"></div></div>
+				  </li>
+				</ul>
+			</div>
+			身高(公分):<input type="text" id="height" name="height" onkeyup="return ValidateFloat(this,value)" min="1", max="250" >
+			體重(公斤):<input type="text" id="weight" name="weight"  onkeyup="return ValidateFloat(this,value)" min="1", max="250" >
+			平均每週運動時數(小時):<input type="text" name="avg_ex_hour" onkeyup="return ValidateFloat(this,value)" min="0", max="168" >
+			進食狀況:			
+			<div class="container">	
+				<ul>
+				  <li>
+					<input type="radio" id="empty" name="stomach" value="empty" {{empty}}>
+					<label for="empty">空腹</label>
+					<div class="check"><div class="inside"></div></div>
+				  </li>
+				  
+				  <li>
+					<input type="radio" id="full" name="stomach" value="full" {{full}}>
+					<label for="full">飽腹</label>
+					<div class="check"><div class="inside"></div></div>
+				  </li>
+				</ul>
+			</div>
+			近一週平均睡眠時間(小時):<input type="text" name="avg_sleep_hour" onkeyup="return ValidateFloat(this,value)" min="0", max="24" >
+			心情:<input type="text" name="mood" >
+			<h3>上傳txt檔案</h3>			
+            <input type="file" name="txt">
+	    <h4><font color="red">{{error}}</font></h4>
+            <input type="submit" value="提交">
+            <a href="/index">
+               <input type="button" value="取消">
+            </a>
+        </form>
+		<script>
+			function ValidateFloat(e, pnumber)
+			{
+				if (!/^\d+[.]?[1-9]?$/.test(pnumber))
+				{
+					var newValue = /\d+[.]?[1-9]?/.exec(e.value);         
+					if (newValue != null)         
+					{             
+						e.value = newValue;        
+					}      
+					else     
+					{          
+						e.value = "";    
+					} 
+				}
+				
+				return false;
+			}
+            function auto_fill_in( email ){
+
+			    var xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function() {
+                    //document.getElementById("test").innerHTML = xmlHttp.responseText;
+                    if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+                        var responseJson = JSON.parse(xmlHttp.responseText);
+                        //document.getElementById("test").innerHTML = xmlHttp.responseText;
+                        document.getElementById("age").value = responseJson["age"];
+                        document.getElementById("grade").value = responseJson["grade"];
+                        if (responseJson["gender"]!="")
+                            document.getElementById(responseJson["gender"]).checked = true;
+                        else{
+                            document.getElementById("female").checked = false;
+                            document.getElementById("male").checked = false;
+                        }
+                        document.getElementById("height").value = responseJson["height"];
+                        document.getElementById("weight").value = responseJson["weight"];
+
+                    }
+                }
+                xmlHttp.open("GET", "api?username="+email, true);
+                xmlHttp.send(null);
+            }
+		</script>
+</body>
+</html>

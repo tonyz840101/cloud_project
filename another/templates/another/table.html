@@ -1,0 +1,30 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Table</title>
+        {% load static %}
+		<link rel="stylesheet" type="text/css" href="{% static 'project/style.css' %}">
+    </head>
+	<body>
+    <div>
+        {% if image %}
+        <img src="{% static image %}" height="300" width="400">
+        {% endif %}
+        <h1>{{ user_test.email }}</h1>
+        <div id="gender">{{ gender }}</div>
+    </div>
+    <table class="responstable">
+            <tr>
+                <th>檔名</th>
+                <th>檔</th>
+            </tr>
+	        {%   for attr in table %}
+                <tr>
+                <td>{{ attr.filename }}</td>
+                <td><a href="download?file={{ attr.filename }}">{{ attr.filename }}</a></td>
+                </tr>
+            {% endfor %}
+    </table>
+
+	</body>
+</html>

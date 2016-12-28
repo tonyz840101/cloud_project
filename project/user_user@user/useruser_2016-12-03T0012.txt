@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Gamedev Canvas Workshop</title>
+    <style>
+    	* { padding: 0; margin: 0; }
+    	<!--canvas { background: -webkit-linear-gradient(top, #7db9e8 0%, #000000 45%, #000000 85%, #840000 100%); display: block; margin: 0 auto;}-->
+		canvas { background: -webkit-linear-gradient(top, #840000 0%, #000000 25%, #000000 85%, #444444 100%); display: block; margin: 0 auto;}
+    </style>
+</head>
+<body>
+<p>意見回饋 </p>
+<form action="https://google.com" methond="get">
+	意見
+	<input type="text" name="123">
+	<input type="submit">
+</form>
+<canvas id="myCanvas" width="400" height="600"></canvas>
+<hr>
+<canvas id="myCanvas2" width="400" height="70"></canvas>
+
+<script>
+	// JavaScript code goes here
+	var level_refresh = 300;
+	var blood_max = 10;
+	var life = 3;
+	var movespeed = 2;
+	var SuperPower = true;//normally it should be false
+	var ATKspeed = 2;//default 5
+	var cycle = 12;
+	/////////////////////////////
+	var canvas = document.getElementById("myCanvas");
+	var canvas2 = document.getElementById("myCanvas2");
+	var ctx = canvas.getContext("2d");
+	var ctx2 = canvas2.getContext("2d");
+	var plane_w = 20;
+	var x = canvas.width/2;
+	var y = canvas.height-plane_w-10;
+	var rightPressed = false;
+	var leftPressed = false;
+	var upPressed = false;
+	var downPressed = false;
+	var blood = blood_max;
+	var level_ctr = level_refresh-10;
+	//var BulletsCount = 1;
+	var Bullets = [];
+	Bullets[0] = [];
+	Bullets[1] = [];
+	var bullet_ctr = 0;
+	var fire = false;
+	var enemies = [];
+	var score = 0;
+	
+	document.addEventListener("keydown", keyDownHandler, false);
+	document.addEventListener("keyup", keyUpHandler, false);
+	
+	function keyDownHandler(e) {
+		if(e.keyCode == 39) {
+			rightPressed = true;
+		}
+		else if(e.keyCode == 37) {
+			leftPressed = true;
+		}
+		else if(e.keyCode == 38) {
+			upPressed = true;
+		}
+		else if(e.keyCode == 40) {
+			downPressed = true;
+		}
+		else if(e.keyCode == 32) {
+			fire = true;
+		}
+	}
+
+	function keyUpHandler(e) {
+		if(e.keyCode == 39) {
+			rightPressed = false;
+		}
+		else if(e.keyCode == 37) {
+			leftPressed = false;
+		}
+		else if(e.keyCode == 38) {
+			upPressed = false;
+		}
+		else if(e.keyCode == 40) {
+			downPressed = false;
+		}
+		else if(e.keyCode == 32) {
+			fire = false;
+		}
+	}
+	
+	function drawBullet() {
+		var speed1 = 2;//1
+		var speed2 = 4;//2
+		/*Bullets[0] = { x: x+10, y: y-6};
+		ctx.beginPath();
+		ctx.arc(Bullets[0].x, Bullets[0].y, 4, 0, 2*Math.PI);
+		ctx.fillstyle="#FFFFFF";
+		ctx.fill();
+		ctx.closePath();
+		Bullets[0].y -= 3;*/
+		for(l=0; l<2; l++){
+			for(r=0; r<Bullets[l].length; r++) {
+				if(Bullets[l][r].x>0 && Bullets[l][r].x<canvas.width && Bullets[l][r].y>0 && Bullets[l][r].y<canvas.height){
+					ctx.beginPath();
+					switch(Bullets[l][r].d){
+						case 0:
+							ctx.moveTo(Bullets[l][r].x-1, Bullets[l][r].y);
+							ctx.lineTo(Bullets[l][r].x-1, Bullets[l][r].y+5);
+							ctx.lineTo(Bullets[l][r].x+1, Bullets[l][r].y+5);
+							ctx.lineTo(Bullets[l][r].x+1, Bullets[l][r].y);
+							Bullets[l][r].y -= speed2;
+							break;
+						case 1:
+							ctx.moveTo(Bullets[l][r].x, Bullets[l][r].y-1);
+							ctx.lineTo(Bullets[l][r].x-4, Bullets[l][r].y+3);
+							ctx.lineTo(Bullets[l][r].x-3, Bullets[l][r].y+4);
+							ctx.lineTo(Bullets[l][r].x+1, Bullets[l][r].y);
+							Bullets[l][r].y -= speed1;
+							Bullets[l][r].x += speed1;
+							break;
+						case 2:
+							ctx.moveTo(Bullets[l][r].x, Bullets[l][r].y-1);
+							ctx.lineTo(Bullets[l][r].x-6, Bullets[l][r].y-1);
+							ctx.lineTo(Bullets[l][r].x-6, Bullets[l][r].y+1);
+							ctx.lineTo(Bullets[l][r].x, Bullets[l][r].y+1);
+							Bullets[l][r].x += speed2;
+							break;
+						case 3:
+							ctx.moveTo(Bullets[l][r].x, Bullets[l][r].y+1);
+							ctx.lineTo(Bullets[l][r].x-4, Bullets[l][r].y-3);
+							ctx.lineTo(Bullets[l][r].x-3, Bullets[l][r].y-4);
+							ctx.lineTo(Bullets[l][r].x+1, Bullets[l][r].y);
+							Bullets[l][r].y += speed1;
+							Bullets[l][r].x += speed1;
+							break;
+						case 4:
+							ctx.moveTo(Bullets[l][r].x-1, Bullets[l][r].y);
+							ctx.lineTo(Bullets[l][r].x-1, Bullets[l][r].y-6);
+							ctx.lineTo(Bullets[l][r].x+1, Bullets[l][r].y-6);
+							ctx.lineTo(Bullets[l][r].x+1, Bullets[l][r].y);
+							Bullets[l][r].y += speed2;
+							break;
+						case 5:
+							ctx.moveTo(Bullets[l][r].x, Bullets[l][r].y+1);
+							ctx.lineTo(Bullets[l][r].x+4, Bullets[l][r].y-3);
+							ctx.lineTo(Bullets[l][r].x+3, Bullets[l][r].y-4);
+							ctx.lineTo(Bullets[l][r].x-1, Bullets[l][r].y);
+							Bullets[l][r].y += speed1;
+							Bullets[l][r].x -= speed1;
+							break;
+						case 6:
+							ctx.moveTo(Bullets[l][r].x, Bullets[l][r].y-1);
+							ctx.lineTo(Bullets[l][r].x+6, Bullets[l][r].y-1);
+							ctx.lineTo(Bullets[l][r].x+6, Bullets[l][r].y+1);
+							ctx.lineTo(Bullets[l][r].x, Bullets[l][r].y+1);
+							Bullets[l][r].x -= speed2;
+							break;
+						case 7:
+							ctx.moveTo(Bullets[l][r].x, Bullets[l][r].y-1);
+							ctx.lineTo(Bullets[l][r].x+4, Bullets[l][r].y+3);
+							ctx.lineTo(Bullets[l][r].x+3, Bullets[l][r].y+4);
+							ctx.lineTo(Bullets[l][r].x-1, Bullets[l][r].y);
+							Bullets[l][r].y -= speed1;
+							Bullets[l][r].x -= speed1;
+							break;
+					}
+					ctx.fillStyle  = Bullets[l][r].c;
+					ctx.fill();
+					ctx.closePath();
+					/*ctx.beginPath();
+					ctx.arc(Bullets[l][r].x, Bullets[l][r].y, 3, 0, 2*Math.PI);
+					ctx.fillStyle  = "#ffffff";
+					ctx.fill();
+					ctx.closePath();
+					ctx.beginPath();
+					ctx.arc(Bullets[l][r].x, Bullets[l][r].y, 2, 0, 2*Math.PI);
+					ctx.fillStyle = Bullets[l][r].c;
+					ctx.fill();
+					ctx.closePath();
+					switch(Bullets[l][r].d){
+						case 0:
+							break;
+						case 1:
+							break;
+						case 2:
+							break;
+						case 3:
+							Bullets[l][r].y += speed1;
+							Bullets[l][r].x += speed1;
+							break;
+						case 4:
+							break;
+						case 5:
+							Bullets[l][r].y += speed1;
+							Bullets[l][r].x -= speed1;
+							break;
+						case 6:
+							Bullets[l][r].x -= speed2;
+							break;
+						case 7:
+							Bullets[l][r].y -= speed1;
+							Bullets[l][r].x -= speed1;
+							break;
+					}*/
+				}
+				else {
+					Bullets[l].splice(r,1);
+				}
+			}
+		}
+		bullet_ctr ++;
+		
+	}
+	
+	function drawPlane_Triangle(x,y,w,speed,color) {
+		ctx.beginPath();
+		ctx.moveTo(x-w/2+1,y);
+		ctx.lineTo(x,y+w/4);
+		ctx.lineTo(x+w/2-1,y);
+		ctx.lineTo(x+2,y+w*3/4);
+		ctx.lineTo(x+2,y+w);
+		ctx.lineTo(x-2,y+w);
+		ctx.lineTo(x-2,y+w*3/4);
+		ctx.moveTo(x-w/2,y);
+		ctx.lineTo(x-w/2,y+w/2);
+		ctx.lineTo(x-w/2+2,y+w/2);
+		ctx.lineTo(x-w/2+2,y);
+		ctx.moveTo(x+w/2,y);
+		ctx.lineTo(x+w/2,y+w/2);
+		ctx.lineTo(x+w/2-2,y+w/2);
+		ctx.lineTo(x+w/2-2,y);
+		/*ctx.moveTo(x-w/2,y);
+		ctx.lineTo(x+w/2,y);
+		ctx.lineTo(x,y+w);*/
+		ctx.fillStyle  = color;
+		ctx.fill();
+		ctx.closePath();
+		if(!(bullet_ctr % (cycle*speed))){
+			Bullets[1][Bullets[1].length] = { x: x, y: y+w+1,d: 4 ,c: color};
+		}
+	}
+	
+	function drawPlane_Round(x,y,w,speed,color) {
+		var appear1 = w*3/2;
+		var appear2 = w;
+		ctx.beginPath();
+		ctx.arc(x, y, w, 0, 2*Math.PI);
+		ctx.strokeStyle = color;
+		ctx.stroke();
+		ctx.closePath();
+		ctx.beginPath();
+		ctx.arc(x, y, w-1, 0, 2*Math.PI);
+		ctx.strokeStyle = color;
+		ctx.stroke();
+		ctx.closePath();
+		ctx.beginPath();
+		ctx.arc(x, y, w/2, 0, 2*Math.PI);
+		ctx.strokeStyle = color;
+		ctx.stroke();
+		ctx.closePath();ctx.beginPath();
+		ctx.arc(x, y, w/2-1, 0, 2*Math.PI);
+		ctx.strokeStyle = color;
+		ctx.stroke();
+		ctx.closePath();
+		if(!(bullet_ctr % (cycle*2*speed))){
+			Bullets[1][Bullets[1].length] = { x: x, y: y-appear1, d: 0 ,c: color};
+			Bullets[1][Bullets[1].length] = { x: x+appear2, y: y-appear2, d: 1 ,c: color};
+			Bullets[1][Bullets[1].length] = { x: x+appear1, y: y, d: 2 ,c: color};
+			Bullets[1][Bullets[1].length] = { x: x+appear2, y: y+appear2, d: 3 ,c: color};
+			Bullets[1][Bullets[1].length] = { x: x, y: y+appear1, d: 4 ,c: color};
+			Bullets[1][Bullets[1].length] = { x: x-appear2, y: y+appear2, d: 5 ,c: color};
+			Bullets[1][Bullets[1].length] = { x: x-appear1, y: y, d: 6 ,c: color};
+			Bullets[1][Bullets[1].length] = { x: x-appear2, y: y-appear2, d: 7 ,c: color};
+		}
+	}
+	
+	function drawMyPlane(speed) {
+		ctx.beginPath();
+		ctx.moveTo(x-plane_w/2,y+plane_w);
+		ctx.lineTo(x-2,y+plane_w*3/4);
+		ctx.lineTo(x,y+plane_w/2);
+		ctx.lineTo(x+2,y+plane_w*3/4);
+		ctx.lineTo(x+plane_w/2,y+plane_w);
+		ctx.lineTo(x+2,y+plane_w/4);
+		ctx.lineTo(x+2,y);
+		ctx.lineTo(x-2,y);
+		ctx.lineTo(x-2,y+plane_w/4);
+		if(SuperPower) ctx.fillStyle  = "#FFFF44";
+		else ctx.fillStyle  = "#FFFFFF";
+		ctx.fill();
+		ctx.closePath();
+		if(!(bullet_ctr % cycle*speed) && fire){
+			if(SuperPower){
+				Bullets[0][Bullets[0].length] = { x: x+plane_w/2, y: y+10, d: 0 ,c: "#FFFF44"};
+				Bullets[0][Bullets[0].length] = { x: x-plane_w/2, y: y+10, d: 0 ,c: "#FFFF44"};
+				Bullets[0][Bullets[0].length] = { x: x, y: y-1, d: 0 ,c: "#FFFF44"};
+			}
+			else Bullets[0][Bullets[0].length] = { x: x, y: y-1, d: 0 ,c: "#FFFFFF"};
+		}
+	}
+
+	function drawPlanes() {
+		drawMyPlane(ATKspeed);
+		for(i=0; i<enemies.length; i++){
+			if(enemies[i].t == 0)drawPlane_Triangle(enemies[i].x,enemies[i].y,enemies[i].w,enemies[i].speed,enemies[i].color);
+			if(enemies[i].t == 1)drawPlane_Round(enemies[i].x,enemies[i].y,enemies[i].w,enemies[i].speed,enemies[i].color);
+			if(enemies[i].x + enemies[i].dx > canvas.width-enemies[i].w/2 || enemies[i].x + enemies[i].dx < enemies[i].w/2) {
+				enemies[i].dx = -enemies[i].dx;
+			}
+			if(enemies[i].y + enemies[i].dy > 400 || enemies[i].y + enemies[i].dy < enemies[i].w) {
+				enemies[i].dy = -enemies[i].dy;
+			}
+			enemies[i].x += enemies[i].dx;
+			enemies[i].y += enemies[i].dy;
+		}
+	}
+	
+	function killplane() {
+		console.log("kill")
+		if(blood < blood_max && SuperPower)blood ++;
+		score ++;
+	}
+	
+	function collisionDetection() {
+	//console.log(enemies.length);
+	Bullets[0][Bullets[0].length]
+		for(c=0; c<Bullets[0].length; c++) {
+			for(p=0; p<enemies.length; p++){
+				//console.log(enemies[p].t);
+				if(enemies[p].t == 0){
+					if((Bullets[0][c].y-enemies[p].y)<=2*(Bullets[0][c].x-enemies[p].x)+enemies[p].w &&
+						(Bullets[0][c].y-enemies[p].y)<=2*(enemies[p].x-Bullets[0][c].x)+enemies[p].w &&
+						Bullets[0][c].y>enemies[p].y){
+						Bullets[0].splice(c,1);
+						enemies.splice(p,1);
+						killplane();
+					}
+					
+				}
+				else if(enemies[p].t == 1){
+					if((Bullets[0][c].y-enemies[p].y) * (Bullets[0][c].y-enemies[p].y) + (Bullets[0][c].x-enemies[p].x) * (Bullets[0][c].x-enemies[p].x) <= enemies[p].w * enemies[p].w){
+						Bullets[0].splice(c,1);
+						enemies.splice(p,1);
+						killplane();
+					}
+				}
+			}
+		}
+		for(c=0; c<Bullets[1].length; c++) {
+			if((Bullets[1][c].y-y)>=2*(Bullets[1][c].x-x) &&
+				(Bullets[1][c].y-y)>=2*(x-Bullets[1][c].x) &&
+				Bullets[1][c].y<y+plane_w){
+				Bullets[1].splice(c,1);
+				console.log("injured");
+				if(blood > 0) blood --;
+				else if(life > 0){
+					life --;
+					blood = blood_max;
+				}
+				else {
+					alert("Game Over!!\nYou killed "+score+" plane(s)");
+                    document.location.reload();
+				}
+			}
+		}
+	}
+	
+	function drawScore() {
+		ctx2.font = "16px Arial";
+		ctx2.fillStyle = "#ffffff";
+		ctx2.fillText("Kill: "+score, 10, 20);
+		ctx2.fillText("life: "+life, 10, 35);
+		ctx2.fillText("blood[ ", 10, 50);
+		for(i = 0; i < blood; i++) 
+			ctx2.fillText("|", 60+5*i, 50);
+		ctx2.fillText("] : "+blood*100/blood_max+"%", 65+5*blood_max, 50);
+	}
+	
+	function draw() {
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+		if(!(enemies.length)){
+			level_ctr ++;
+		}
+		if(level_ctr == level_refresh) {
+			level_ctr = 0;
+			enemies[enemies.length] = {x: 300, y: 50, w: 10, dx: -2, dy: 3, t: 1, speed: 1, color: "#2222ff"};
+			enemies[enemies.length] = {x: 100, y: 50, w: 10, dx: 2, dy: 3, t: 1, speed: 1, color: "#2222ff"};
+			enemies[enemies.length] = {x: 300, y: 100, w: 20, dx: -1, dy: 0, t: 0, speed: 2, color: "#ff2222"};
+			enemies[enemies.length] = {x: 100, y: 100, w: 20, dx: 1, dy: 0, t: 0, speed: 2, color: "#ff2222"};
+			enemies[enemies.length] = {x: 380, y: 100, w: 20, dx: -1, dy: 0, t: 0, speed: 2, color: "#ff2222"};
+			enemies[enemies.length] = {x: 20, y: 100, w: 20, dx: 1, dy: 0, t: 0, speed: 2, color: "#ff2222"};
+			enemies[enemies.length] = {x: 300, y: 70, w: 20, dx: -5, dy: 0, t: 0, speed: 1, color: "#22ff22"};
+			enemies[enemies.length] = {x: 100, y: 70, w: 20, dx: 5, dy: 0, t: 0, speed: 1, color: "#22ff22"};
+			//enemies[enemies.length] = {x: 200, y: 200, w: 15, dx: 0, dy: 0, t: 1, speed: 5, color: "#2222ff"};
+		}
+		drawBullet();
+		drawPlanes();
+		collisionDetection();
+		drawScore();
+		if(rightPressed && x < canvas.width-plane_w/2) {
+			x += movespeed;
+		}
+		else if(leftPressed && x > plane_w/2) {
+			x -= movespeed;
+		}
+		else if(upPressed && y > 150) {
+			y -= movespeed;
+		}
+		else if(downPressed && y < canvas.height-plane_w-2) {
+			y += movespeed;
+		}
+	}
+	setInterval(draw, 1);
+</script>
+
+</body>
+</html>
